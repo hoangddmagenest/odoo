@@ -16,16 +16,11 @@ class StockPicking(models.Model):
         states={'draft': [('readonly', False)], 'waiting': [('readonly', False)], 'confirmed': [('readonly', False)],
                 'assigned': [('readonly', False)]})
 
-    # @api.onchange('location_id')
-    # def _onchange_location_id(self):
-    #     print('11111111')
-    #     if self.location_check:
-    #         list_location = self.get_list_location_id(self.location_check)
-    #         return {'domain': {'location_id': [('id', 'in', list_location)]}}
-    #
-    # def get_list_location_id(self, location_id):
-    #     list_location = []
-    #     if location_id.child_ids:
-    #         for location in location_id.child_ids:
-    #             list_location.append(location.id)
-    #     return list_location
+    location_dest_id = fields.Many2one(
+        'stock.location', "Destination Location",
+        default=lambda self: self.env['stock.picking.type'].browse(
+            self._context.get('default_picking_type_id')).default_location_dest_id,
+        check_company=True, readonly=True, domain="""[('id', 'child_of', location_check)]""", required=True,
+        states={'draft': [('readonly', False)], 'waiting': [('readonly', False)], 'confirmed': [('readonly', False)],
+                'assigned': [('readonly', False)]})
+
